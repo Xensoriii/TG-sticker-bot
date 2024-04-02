@@ -1,0 +1,37 @@
+from telegram.ext import Updater, MessageHandler, Filters
+from telegram import Sticker, ParseMode
+
+# Define your Telegram bot token
+TOKEN = "YOUR_TELEGRAM_BOT_TOKEN"
+
+# Function to handle messages and convert them into stickers
+def convert_to_sticker(update, context):
+    # Get the message text
+    message_text = update.message.text
+    
+    # Create a sticker from the message text
+    sticker = Sticker(
+        file_id=context.bot.send_message(chat_id=update.message.chat_id, text=message_text).sticker.file_id
+    )
+    
+    # Send the sticker
+    context.bot.send_sticker(chat_id=update.message.chat_id, sticker=sticker)
+
+def main():
+    # Create the Updater and pass it your bot's token.
+    updater = Updater(TOKEN, use_context=True)
+
+    # Get the dispatcher to register handlers
+    dp = updater.dispatcher
+
+    # Add message handler
+    dp.add_handler(MessageHandler(Filters.text & ~Filters.command, convert_to_sticker))
+
+    # Start the Bot
+    updater.start_polling()
+
+    # Run the bot until you press Ctrl-C
+    updater.idle()
+
+if __name__ == '__main__':
+    main()
